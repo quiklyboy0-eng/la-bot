@@ -20,7 +20,9 @@ This bot is ready to run on Railway as a worker.
 
 ### Register slash commands
 
-Before or after deployment, run locally:
+Railway will now run command registration automatically before starting the bot, so the service can register `/infraction`, `/promote`, and `/assign` each time it launches.
+
+If you want to run it manually, use:
 
 ```bash
 npm run deploy
