@@ -28,6 +28,16 @@ npm run deploy
 
 This will register `/infraction`, `/promote`, and `/assign` in your server.
 
+### Custom embed images
+
+If you want rich bottom images in the embeds, add the following files to an `assets/` folder in the project root:
+
+- `assets/infraction.png`
+- `assets/promotion.png`
+- `assets/assignment.png`
+
+When those files exist, the bot will attach them automatically.
+
 ### Notes
 
 - This bot runs as a worker process, not a web app.

@@ -37,6 +37,10 @@ const commands = [
       option.setName('user')
         .setDescription('The member to warn')
         .setRequired(true))
+    .addRoleOption(option =>
+      option.setName('role')
+        .setDescription('Role to assign automatically when issuing this infraction')
+        .setRequired(false))
     .addStringOption(option =>
       option.setName('type')
         .setDescription('Infraction type')

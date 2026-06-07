@@ -1,5 +1,7 @@
 import 'dotenv/config';
-import { Client, GatewayIntentBits, PermissionFlagsBits, EmbedBuilder } from 'discord.js';
+import fs from 'fs';
+import path from 'path';
+import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
 
 const token = process.env.DISCORD_TOKEN;
 
@@ -26,6 +28,27 @@ function hasRequiredRole(member, allowedRoles) {
   return member.roles?.cache?.some(role => allowedRoles.includes(role.id));
 }
 
+function getLocalImage(filename) {
+  const assetPath = path.join(process.cwd(), 'assets', filename);
+  return fs.existsSync(assetPath) ? assetPath : null;
+}
+
+function buildEmbed({ title, color, description, fields, footer, imageUrl }) {
+  const embed = new EmbedBuilder()
+    .setTitle(title)
+    .setColor(color)
+    .setDescription(description)
+    .addFields(fields)
+    .setFooter({ text: footer })
+    .setTimestamp();
+
+  if (imageUrl) {
+    embed.setImage(imageUrl);
+  }
+
+  return embed;
+}
+
 client.once('ready', () => {
   console.log(`Logged in as ${client.user.tag}`);
 });
@@ -41,44 +64,68 @@ client.on('interactionCreate', async interaction => {
     return interaction.reply({ content: 'You do not have permission to use this command.', ephemeral: true });
   }
 
-  const now = new Date();
-
   try {
     switch (interaction.commandName) {
       case 'infraction': {
         const target = interaction.options.getUser('user', true);
+        const targetMember = interaction.options.getMember('user') || await interaction.guild.members.fetch(target.id);
+        const role = interaction.options.getRole('role');
         const type = interaction.options.getString('type', true);
         const reason = interaction.options.getString('reason', true);
+        const assignedRoleName = role ? `${role}` : 'No role assigned';
 
-        const embed = new EmbedBuilder()
-          .setTitle('⚠️ La Sombra Roja Infraction')
-          .setColor(0x660000)
-          .addFields(
-            { name: 'Target', value: `${target}`, inline: false },
-            { name: 'Type', value: type, inline: false },
-            { name: 'Reason', value: reason, inline: false }
-          )
-          .setFooter({ text: `Issued by ${interaction.user.tag}` })
-          .setTimestamp(now);
+        if (role && targetMember) {
+          try {
+            await targetMember.roles.add(role);
+          } catch (error) {
+            console.error('Failed to assign role:', error);
+          }
+        }
 
-        await interaction.reply({ embeds: [embed] });
+        const imagePath = getLocalImage('infraction.png');
+        const embed = buildEmbed({
+          title: '⚠️ La Sombra Roja Infraction',
+          color: 0x8B0000,
+          description: `An infraction has been recorded for ${target}.`,
+          fields: [
+            { name: 'Target', value: `${target}`, inline: true },
+            { name: 'Infraction', value: type, inline: true },
+            { name: 'Role', value: assignedRoleName, inline: true },
+            { name: 'Reason', value: reason, inline: false },
+            { name: 'Issued by', value: `${interaction.user}`, inline: true }
+          ],
+          footer: `Issued by ${interaction.user.tag}`,
+          imageUrl: imagePath ? 'attachment://infraction.png' : null
+        });
+
+        const replyOptions = { embeds: [embed] };
+        if (imagePath) replyOptions.files = [{ attachment: imagePath, name: 'infraction.png' }];
+
+        await interaction.reply(replyOptions);
         break;
       }
       case 'promote': {
         const target = interaction.options.getUser('user', true);
         const role = interaction.options.getRole('role', true);
 
-        const embed = new EmbedBuilder()
-          .setTitle('🌹 Promotion - La Sombra Roja')
-          .setColor(0xFF0000)
-          .addFields(
-            { name: 'Member', value: `${target}`, inline: false },
-            { name: 'New Rank', value: `${role}`, inline: false }
-          )
-          .setFooter({ text: `Promoted by ${interaction.user.tag}` })
-          .setTimestamp(now);
+        const imagePath = getLocalImage('promotion.png');
+        const embed = buildEmbed({
+          title: '🌹 Promotion - La Sombra Roja',
+          color: 0xFF0000,
+          description: `A promotion has been granted to ${target}.`,
+          fields: [
+            { name: 'Member', value: `${target}`, inline: true },
+            { name: 'New Rank', value: `${role}`, inline: true },
+            { name: 'Promoted by', value: `${interaction.user}`, inline: true }
+          ],
+          footer: `Promoted by ${interaction.user.tag}`,
+          imageUrl: imagePath ? 'attachment://promotion.png' : null
+        });
 
-        await interaction.reply({ embeds: [embed] });
+        const replyOptions = { embeds: [embed] };
+        if (imagePath) replyOptions.files = [{ attachment: imagePath, name: 'promotion.png' }];
+
+        await interaction.reply(replyOptions);
         break;
       }
       case 'assign': {
@@ -86,18 +133,25 @@ client.on('interactionCreate', async interaction => {
         const task = interaction.options.getString('task', true);
         const deadline = interaction.options.getString('deadline');
 
-        const embed = new EmbedBuilder()
-          .setTitle('📋 Assignment - La Sombra Roja')
-          .setColor(0x660000)
-          .addFields(
-            { name: 'Member', value: `${target}`, inline: false },
+        const imagePath = getLocalImage('assignment.png');
+        const embed = buildEmbed({
+          title: '📋 Assignment - La Sombra Roja',
+          color: 0x8B0000,
+          description: `A new task has been assigned to ${target}.`,
+          fields: [
+            { name: 'Member', value: `${target}`, inline: true },
             { name: 'Task', value: task, inline: false },
-            { name: 'Deadline', value: formatDeadline(deadline), inline: false }
-          )
-          .setFooter({ text: `Assigned by ${interaction.user.tag}` })
-          .setTimestamp(now);
+            { name: 'Deadline', value: formatDeadline(deadline), inline: true },
+            { name: 'Assigned by', value: `${interaction.user}`, inline: true }
+          ],
+          footer: `Assigned by ${interaction.user.tag}`,
+          imageUrl: imagePath ? 'attachment://assignment.png' : null
+        });
 
-        await interaction.reply({ embeds: [embed] });
+        const replyOptions = { embeds: [embed] };
+        if (imagePath) replyOptions.files = [{ attachment: imagePath, name: 'assignment.png' }];
+
+        await interaction.reply(replyOptions);
         break;
       }
       default:
