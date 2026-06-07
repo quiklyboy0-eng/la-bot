@@ -54,7 +54,11 @@ const commands = [
     .addStringOption(option =>
       option.setName('reason')
         .setDescription('Reason for the infraction')
-        .setRequired(true)),
+        .setRequired(true))
+    .addStringOption(option =>
+      option.setName('deadline')
+        .setDescription('Optional deadline for this infraction')
+        .setRequired(false)),
   new SlashCommandBuilder()
     .setName('promote')
     .setDescription('Promote a member by assigning a new role.')
@@ -74,8 +78,8 @@ const commands = [
         .setDescription('The member to assign')
         .setRequired(true))
     .addStringOption(option =>
-      option.setName('task')
-        .setDescription('Description of the task')
+      option.setName('reason')
+        .setDescription('Reason or description for the assignment')
         .setRequired(true))
     .addStringOption(option =>
       option.setName('deadline')

@@ -72,6 +72,7 @@ client.on('interactionCreate', async interaction => {
         const role = interaction.options.getRole('role');
         const type = interaction.options.getString('type', true);
         const reason = interaction.options.getString('reason', true);
+        const deadline = interaction.options.getString('deadline');
         const assignedRoleName = role ? `${role}` : 'No role assigned';
 
         if (role && targetMember) {
@@ -91,6 +92,7 @@ client.on('interactionCreate', async interaction => {
             { name: 'Target', value: `${target}`, inline: true },
             { name: 'Infraction', value: type, inline: true },
             { name: 'Role', value: assignedRoleName, inline: true },
+            { name: 'Deadline', value: formatDeadline(deadline), inline: true },
             { name: 'Reason', value: reason, inline: false },
             { name: 'Issued by', value: `${interaction.user}`, inline: true }
           ],
@@ -130,7 +132,7 @@ client.on('interactionCreate', async interaction => {
       }
       case 'assign': {
         const target = interaction.options.getUser('user', true);
-        const task = interaction.options.getString('task', true);
+        const reason = interaction.options.getString('reason', true);
         const deadline = interaction.options.getString('deadline');
 
         const imagePath = getLocalImage('assignment.png');
@@ -140,7 +142,7 @@ client.on('interactionCreate', async interaction => {
           description: `A new task has been assigned to ${target}.`,
           fields: [
             { name: 'Member', value: `${target}`, inline: true },
-            { name: 'Task', value: task, inline: false },
+            { name: 'Reason', value: reason, inline: false },
             { name: 'Deadline', value: formatDeadline(deadline), inline: true },
             { name: 'Assigned by', value: `${interaction.user}`, inline: true }
           ],

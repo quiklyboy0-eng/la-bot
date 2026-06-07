@@ -22,6 +22,12 @@ This bot is ready to run on Railway as a worker.
 
 Railway will now run command registration automatically before starting the bot, so the service can register `/infraction`, `/promote`, and `/assign` each time it launches.
 
+Command usage:
+
+- `/infraction user:<member> role:<optional role> type:<infraction type> reason:<text> deadline:<optional date>`
+- `/promote user:<member> role:<new rank>`
+- `/assign user:<member> reason:<text> deadline:<optional date>`
+
 If you want to run it manually, use:
 
 ```bash
