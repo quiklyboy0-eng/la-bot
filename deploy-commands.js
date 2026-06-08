@@ -39,26 +39,12 @@ const commands = [
         .setRequired(true))
     .addRoleOption(option =>
       option.setName('role')
-        .setDescription('Role to assign automatically when issuing this infraction')
-        .setRequired(false))
-    .addStringOption(option =>
-      option.setName('type')
-        .setDescription('Infraction type')
-        .setRequired(true)
-        .addChoices(
-          { name: 'Warning 1', value: 'Warning 1' },
-          { name: 'Warning 2', value: 'Warning 2' },
-          { name: 'Warning 3', value: 'Warning 3' },
-          { name: 'Final Warning', value: 'Final Warning' }
-        ))
+        .setDescription('Role to assign')
+        .setRequired(true))
     .addStringOption(option =>
       option.setName('reason')
         .setDescription('Reason for the infraction')
-        .setRequired(true))
-    .addStringOption(option =>
-      option.setName('deadline')
-        .setDescription('Optional deadline for this infraction')
-        .setRequired(false)),
+        .setRequired(true)),
   new SlashCommandBuilder()
     .setName('promote')
     .setDescription('Promote a member by assigning a new role.')
@@ -83,8 +69,8 @@ const commands = [
         .setRequired(true))
     .addStringOption(option =>
       option.setName('deadline')
-        .setDescription('Optional deadline (e.g. 2026-07-01)')
-        .setRequired(false)),
+        .setDescription('Deadline for the assignment')
+        .setRequired(true)),
 ].map(command => command.toJSON());
 
 (async () => {

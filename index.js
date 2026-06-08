@@ -69,13 +69,11 @@ client.on('interactionCreate', async interaction => {
       case 'infraction': {
         const target = interaction.options.getUser('user', true);
         const targetMember = interaction.options.getMember('user') || await interaction.guild.members.fetch(target.id);
-        const role = interaction.options.getRole('role');
-        const type = interaction.options.getString('type', true);
+        const role = interaction.options.getRole('role', true);
         const reason = interaction.options.getString('reason', true);
-        const deadline = interaction.options.getString('deadline');
-        const assignedRoleName = role ? `${role}` : 'No role assigned';
+        const assignedRoleName = `${role}`;
 
-        if (role && targetMember) {
+        if (targetMember) {
           try {
             await targetMember.roles.add(role);
           } catch (error) {
@@ -90,9 +88,7 @@ client.on('interactionCreate', async interaction => {
           description: `An infraction has been recorded for ${target}.`,
           fields: [
             { name: 'Target', value: `${target}`, inline: true },
-            { name: 'Infraction', value: type, inline: true },
             { name: 'Role', value: assignedRoleName, inline: true },
-            { name: 'Deadline', value: formatDeadline(deadline), inline: true },
             { name: 'Reason', value: reason, inline: false },
             { name: 'Issued by', value: `${interaction.user}`, inline: true }
           ],
@@ -133,7 +129,7 @@ client.on('interactionCreate', async interaction => {
       case 'assign': {
         const target = interaction.options.getUser('user', true);
         const reason = interaction.options.getString('reason', true);
-        const deadline = interaction.options.getString('deadline');
+        const deadline = interaction.options.getString('deadline', true);
 
         const imagePath = getLocalImage('assignment.png');
         const embed = buildEmbed({
@@ -143,7 +139,7 @@ client.on('interactionCreate', async interaction => {
           fields: [
             { name: 'Member', value: `${target}`, inline: true },
             { name: 'Reason', value: reason, inline: false },
-            { name: 'Deadline', value: formatDeadline(deadline), inline: true },
+            { name: 'Deadline', value: deadline, inline: true },
             { name: 'Assigned by', value: `${interaction.user}`, inline: true }
           ],
           footer: `Assigned by ${interaction.user.tag}`,
