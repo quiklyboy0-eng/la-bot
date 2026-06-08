@@ -1,9 +1,11 @@
 import 'dotenv/config';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
 import { Client, GatewayIntentBits, EmbedBuilder } from 'discord.js';
 
 const token = process.env.DISCORD_TOKEN;
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 if (!token) {
   console.error('Missing DISCORD_TOKEN in environment.');
@@ -27,7 +29,7 @@ function formatDeadline(deadline) {
 function hasRequiredRole(member, allowedRoles) {
   return member.roles?.cache?.some(role => allowedRoles.includes(role.id));
 }
-
+__dirname
 function getLocalImage(filename) {
   const assetPath = path.join(process.cwd(), 'assets', filename);
   return fs.existsSync(assetPath) ? assetPath : null;
